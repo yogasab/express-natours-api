@@ -9,7 +9,7 @@ const {
 } = require("../controllers/tours");
 const tourRouter = express.Router();
 
-// tourRouter.param("id", checkID);
+tourRouter.param("id", checkID);
 
 tourRouter.route("/").get(getTours).post(createTours);
 tourRouter.route("/:id").get(getTour).patch(updateTour).delete(deleteTour);
