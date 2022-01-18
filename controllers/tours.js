@@ -70,6 +70,16 @@ exports.getTours = async (req, res) => {
 			query = query.sort("-createdAt");
 		}
 
+		// Selecting fields to return in response
+		if (req.query.fields) {
+			// Split to array and join them with space
+			const selectedFields = req.query.fields.split(",").join(" ");
+			// Return response only for the selected fields
+			query = query.select(selectedFields);
+		} else {
+			query = query.select("-__v");
+		}
+
 		// Model.prototype.query
 		const tours = await query;
 
