@@ -41,7 +41,27 @@ exports.createTours = async (req, res) => {
 
 exports.getTours = async (req, res) => {
 	try {
-		const tours = await Tour.find();
+		// Filtering
+		// Set the query params to new object
+		const queryObj = { ...req.query };
+		// Set the excluded field that doesnt belong in Tour Model
+		const excludedFields = ["page", "sort", "limit", "fields"];
+		// Loop through excluded field that doesnt macth in Tour Model
+		excludedFields.forEach((field) => delete queryObj[field]);
+
+		// Advance filtering using operator
+		// Convert JSON format to Object string format
+		let queryString = JSON.stringify(queryObj);
+		queryString = queryString.replace(
+			/\b(gte|gt|lte|lt)\b/g,
+			(matchedOperator) => `$${matchedOperator}`
+		);
+
+		// Model.prototype
+		const query = Tour.find(JSON.parse(queryString));
+		// Model.prototype.query
+		const tours = await query;
+
 		res.status(200).json({
 			status: "Success",
 			results: tours.length,
@@ -50,7 +70,7 @@ exports.getTours = async (req, res) => {
 			},
 		});
 	} catch (error) {
-		res.status(500).json({ status: "Error" });
+		res.status(500).json({ status: error.message });
 	}
 };
 
