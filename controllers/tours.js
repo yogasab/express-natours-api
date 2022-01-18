@@ -57,8 +57,19 @@ exports.getTours = async (req, res) => {
 			(matchedOperator) => `$${matchedOperator}`
 		);
 
-		// Model.prototype
-		const query = Tour.find(JSON.parse(queryString));
+		// Model.prototype return query
+		let query = Tour.find(JSON.parse(queryString));
+
+		// Filtering by Sort
+		if (req.query.sort) {
+			// Split to array and join them with space
+			const sortBy = req.query.sort.split(",").join(" ");
+			// Second query criteria is applied/sorted when the first query have the same value
+			query = query.sort(sortBy);
+		} else {
+			query = query.sort("-createdAt");
+		}
+
 		// Model.prototype.query
 		const tours = await query;
 
