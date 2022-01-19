@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Tour = require("../models/Tour");
+const APIFeature = require("../utils/APIFeature");
 
 // Aliasing Request Query Middleware
 exports.aliasingQueryParams = (req, res, next) => {
@@ -50,59 +51,64 @@ exports.createTours = async (req, res) => {
 
 exports.getTours = async (req, res) => {
 	try {
-		// Filtering
-		// Set the query params to new object
-		const queryObj = { ...req.query };
-		// Set the excluded field that doesnt belong in Tour Model
-		const excludedFields = ["page", "sort", "limit", "fields"];
-		// Loop through excluded field that doesnt macth in Tour Model
-		excludedFields.forEach((field) => delete queryObj[field]);
+		// // Filtering
+		// // Set the query params to new object
+		// const queryObj = { ...req.query };
+		// // Set the excluded field that doesnt belong in Tour Model
+		// const excludedFields = ["page", "sort", "limit", "fields"];
+		// // Loop through excluded field that doesnt macth in Tour Model
+		// excludedFields.forEach((field) => delete queryObj[field]);
 
-		// Advance filtering using operator
-		// Convert JSON format to Object string format
-		let queryString = JSON.stringify(queryObj);
-		queryString = queryString.replace(
-			/\b(gte|gt|lte|lt)\b/g,
-			(matchedOperator) => `$${matchedOperator}`
-		);
+		// // Advance filtering using operator
+		// // Convert JSON format to Object string format
+		// let queryString = JSON.stringify(queryObj);
+		// queryString = queryString.replace(
+		// 	/\b(gte|gt|lte|lt)\b/g,
+		// 	(matchedOperator) => `$${matchedOperator}`
+		// );
 
-		// Model.prototype return query
-		let query = Tour.find(JSON.parse(queryString));
+		// // Model.prototype return query
+		// let query = Tour.find(JSON.parse(queryString));
 
-		// Filtering by Sort
-		if (req.query.sort) {
-			// Split to array and join them with space
-			const sortBy = req.query.sort.split(",").join(" ");
-			// Second query criteria is applied/sorted when the first query have the same value
-			query = query.sort(sortBy);
-		} else {
-			query = query.sort("-createdAt");
-		}
+		// // Filtering by Sort
+		// if (req.query.sort) {
+		// 	// Split to array and join them with space
+		// 	const sortBy = req.query.sort.split(",").join(" ");
+		// 	// Second query criteria is applied/sorted when the first query have the same value
+		// 	query = query.sort(sortBy);
+		// } else {
+		// 	query = query.sort("-createdAt");
+		// }
 
-		// Selecting fields to return in response
-		if (req.query.fields) {
-			// Split to array and join them with space
-			const selectedFields = req.query.fields.split(",").join(" ");
-			// Return response only for the selected fields
-			query = query.select(selectedFields);
-		} else {
-			query = query.select("-__v");
-		}
+		// // Selecting fields to return in response
+		// if (req.query.fields) {
+		// 	// Split to array and join them with space
+		// 	const selectedFields = req.query.fields.split(",").join(" ");
+		// 	// Return response only for the selected fields
+		// 	query = query.select(selectedFields);
+		// } else {
+		// 	query = query.select("-__v");
+		// }
 
-		// Pagination
-		const page = req.query.page * 1 || 1;
-		const limit = req.query.limit * 1 || 100;
-		const skip = (page - 1) * limit;
+		// // Pagination
+		// const page = req.query.page * 1 || 1;
+		// const limit = req.query.limit * 1 || 100;
+		// const skip = (page - 1) * limit;
 
-		query = query.skip(skip).limit(limit);
-		// Validation to check if the number of page exist
-		if (req.query.page) {
-			const numTours = await Tour.countDocuments();
-			if (skip >= numTours) throw new Error("Page not found");
-		}
+		// query = query.skip(skip).limit(limit);
+		// // Validation to check if the number of page exist
+		// if (req.query.page) {
+		// 	const numTours = await Tour.countDocuments();
+		// 	if (skip >= numTours) throw new Error("Page not found");
+		// }
 
 		// Model.prototype.query
-		const tours = await query;
+		const features = new APIFeature(Tour.find(), req.query)
+			.filter()
+			.sort()
+			.limitFields()
+			.paginate();
+		const tours = await features.query;
 
 		res.status(200).json({
 			status: "Success",
