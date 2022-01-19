@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 const Tour = require("../models/Tour");
 
+// Aliasing Request Query Middleware
+exports.aliasingQueryParams = (req, res, next) => {
+	req.query.limit = "5";
+	req.query.sort = "-ratingsAverage,price";
+	req.query.fields = "name,summary,price,ratingsAverage";
+	next();
+};
+
 // Params Method Middleware
 exports.checkID = (req, res, next, val) => {
 	// if (req.params.id * 1 > tours.length) {
@@ -14,6 +22,7 @@ exports.checkID = (req, res, next, val) => {
 	req.id = req.params.id;
 	next();
 };
+
 exports.checkBody = (req, res, next) => {
 	if (!req.body.name || !req.body.price) {
 		return res.status(400).json({
@@ -78,6 +87,18 @@ exports.getTours = async (req, res) => {
 			query = query.select(selectedFields);
 		} else {
 			query = query.select("-__v");
+		}
+
+		// Pagination
+		const page = req.query.page * 1 || 1;
+		const limit = req.query.limit * 1 || 100;
+		const skip = (page - 1) * limit;
+
+		query = query.skip(skip).limit(limit);
+		// Validation to check if the number of page exist
+		if (req.query.page) {
+			const numTours = await Tour.countDocuments();
+			if (skip >= numTours) throw new Error("Page not found");
 		}
 
 		// Model.prototype.query

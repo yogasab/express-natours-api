@@ -8,12 +8,15 @@ dotenv.config({ path: "./config.env" });
 const DB = process.env.DATABASE_CLOUD_URI;
 
 mongoose
-	.connect(DB, {
-		useNewUrlParser: true,
-		useCreateIndex: true,
-		useFindAndModify: true,
-		useUnifiedTopology: true,
-	})
+	.connect(
+		"mongodb+srv://yogasab:b0bmarl3y@cluster0.a8lwh.mongodb.net/natours?retryWrites=true&w=majority",
+		{
+			useNewUrlParser: true,
+			useCreateIndex: true,
+			useFindAndModify: true,
+			useUnifiedTopology: true,
+		}
+	)
 	.then((con) => {
 		console.log(`Database connected successfully at ${con.connection.host}`);
 	})
