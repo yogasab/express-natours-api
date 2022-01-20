@@ -151,7 +151,8 @@ exports.updateTour = async (req, res) => {
 			},
 		});
 	} catch (error) {
-		res.status(400).json({ status: "Failed", message: error.message });
+		const message = error.message.split(": ")[2];
+		res.status(400).json({ status: "Failed", message });
 	}
 };
 
