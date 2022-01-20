@@ -191,10 +191,10 @@ exports.getTourStats = async (req, res) => {
 					avgRating: 1,
 				},
 			},
-			{
-				// Macthed again by the current id is not easy / exclude easy diff
-				$match: { _id: { $ne: "easy" } },
-			},
+			// {
+			// 	// Macthed again by the current id is not easy / exclude easy diff
+			// 	$match: { _id: { $ne: "easy" } },
+			// },
 		]);
 		res.status(200).json({
 			status: "Success",

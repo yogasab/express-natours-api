@@ -77,16 +77,15 @@ TourSchema.virtual("durationWeeks").get(function () {
 
 // Document Middleware: runs before .save() or .create() not .saveMany()
 TourSchema.pre("save", function (next) {
+	// We have access to the current Model
 	this.slug = slugify(this.name, { lower: true });
 	next();
 	// console.log("Running pre save middleware 1");
 });
-
 // TourSchema.pre("save", function (next) {
 // 	console.log("Running pre save middleware 2");
 // 	next();
 // });
-
 // TourSchema.post("save", function (doc, next) {
 // 	console.log("Running post middleware");
 // 	next();
@@ -95,15 +94,22 @@ TourSchema.pre("save", function (next) {
 // Query Middleware: runs before all the methods that starts with .find()
 // TourSchema.pre("find", function (next) {
 TourSchema.pre(/^find/, function (next) {
-	// We have access to model to do some query
+	// We have access to query
 	this.find({ secretTour: { $ne: true } });
 	// Define an arbitary object
 	this.duration = Date.now();
 	next();
 });
-
+// Query Middleware: runs before all the methods that starts with .find()
 TourSchema.post(/^find/, function (docs, next) {
 	console.log(`Query took ${Date.now() - this.duration} milliseconds`);
+	next();
+});
+
+// Aggregation Midleware: runs before .aggregate()
+TourSchema.pre("aggregate", function (next) {
+	// We have access to aggregation to run this match before aggregation in controller
+	this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 	next();
 });
 
