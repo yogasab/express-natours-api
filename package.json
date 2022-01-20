@@ -13,7 +13,8 @@
 	"license": "ISC",
 	"devDependencies": {
 		"express": "^4.17.2",
-		"nodemon": "^2.0.15"
+		"nodemon": "^2.0.15",
+		"slugify": "^1.6.5"
 	},
 	"dependencies": {
 		"dotenv": "^12.0.4",
