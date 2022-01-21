@@ -2,6 +2,8 @@ const express = require("express");
 const morgan = require("morgan");
 // const userRouter = require("./routes/userRouter");
 const tourRouter = require("./routes/tourRouter");
+const ErrorResponse = require("./utils/ErrorResponse");
+const globalHandleError = require("./middlewares/globalHandleError");
 const app = express();
 
 // Middleware
@@ -26,10 +28,23 @@ app.use("/api/v1/tours", tourRouter);
 
 // Error handling for unavailable routes that defined in above
 app.all("*", (req, res, next) => {
-	res.status(404).json({
-		status: "Failed",
-		message: `The routes for ${req.originalUrl} is not found`,
-	});
+	// res.status(404).json({
+	// 	status: "Failed",
+	// 	message: `The routes for ${req.originalUrl} is not found`,
+	// });
+
+	// Send The Error to next error handling middleware
+	// const err = new Error(`The routes for ${req.originalUrl} is not found`);
+	// err.statusCode = 404;
+	// err.status = "Failed";
+
+	// Everything that pass as argument in next method is error
+	next(
+		new ErrorResponse(`The routes for ${req.originalUrl} is not found`, 404)
+	);
 });
+
+// Use err as first argument to create global handling error
+app.use(globalHandleError);
 
 module.exports = app;
