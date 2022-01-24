@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 // const userRouter = require("./routes/userRouter");
-const tourRouter = require("./routes/tourRouter");
+const tourRouter = require("./routes/TourRouter");
 const ErrorResponse = require("./utils/ErrorResponse");
 const globalHandleError = require("./middlewares/globalHandleError");
 const app = express();
@@ -44,7 +44,7 @@ app.all("*", (req, res, next) => {
 	);
 });
 
-// Use err as first argument to create global handling error
+// Use err as first argument to create Global Handling Error
 app.use(globalHandleError);
 
 module.exports = app;

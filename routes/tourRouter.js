@@ -9,7 +9,7 @@ const {
 	aliasingQueryParams,
 	getTourStats,
 	getMonthlyPlan,
-} = require("../controllers/tours");
+} = require("../controllers/TourController");
 const tourRouter = express.Router();
 
 tourRouter.param("id", checkID);
