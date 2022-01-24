@@ -12,6 +12,7 @@ const {
 } = require("../controllers/TourController");
 const tourRouter = express.Router();
 
+// Middleware for checking route that requires an ID
 tourRouter.param("id", checkID);
 
 tourRouter.route("/").get(getTours).post(createTours);

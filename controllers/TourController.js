@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Tour = require("../models/Tour");
 const APIFeature = require("../utils/APIFeature");
+const ErrorResponse = require("../utils/ErrorResponse");
 const HandleAsync = require("../utils/HandleAsync");
 
 // Aliasing Request Query Middleware
@@ -14,7 +15,9 @@ exports.aliasingQueryParams = (req, res, next) => {
 // Params Method Middleware
 exports.checkID = (req, res, next, val) => {
 	if (!mongoose.isValidObjectId(req.params.id)) {
-		res.status(404).json({ status: "Failed", message: "Tour not found" });
+		return next(
+			new ErrorResponse(`Tour with ID of ${req.params.id} is not found`, 404)
+		);
 	}
 	req.id = req.params.id;
 	next();

@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 // const userRouter = require("./routes/userRouter");
-const tourRouter = require("./routes/TourRouter");
+const TourRouter = require("./routes/TourRouter");
 const ErrorResponse = require("./utils/ErrorResponse");
 const globalHandleError = require("./middlewares/globalHandleError");
 const app = express();
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 });
 
 // Mounting Router
-app.use("/api/v1/tours", tourRouter);
+app.use("/api/v1/tours", TourRouter);
 // app.use("/api/v1/users", userRouter);
 
 // Error handling for unavailable routes that defined in above

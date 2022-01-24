@@ -16,7 +16,9 @@ mongoose
 		}
 	)
 	.then((con) => {
-		console.log(`Database connected successfully at ${con.connection.host}`);
+		console.log(
+			`Database connected successfully at ${con.connection.host} on ${process.env.NODE_ENV}`
+		);
 	})
 	.catch((err) => {
 		console.log(err);
