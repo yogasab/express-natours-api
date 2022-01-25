@@ -1,9 +1,10 @@
 const express = require("express");
 const morgan = require("morgan");
-// const userRouter = require("./routes/userRouter");
+const userRouter = require("./routes/userRouter");
 const TourRouter = require("./routes/TourRouter");
 const ErrorResponse = require("./utils/ErrorResponse");
 const globalHandleError = require("./middlewares/globalHandleError");
+const authRouter = require("./routes/AuthRouter");
 const app = express();
 
 // Middleware
@@ -24,7 +25,8 @@ app.use((req, res, next) => {
 
 // Mounting Router
 app.use("/api/v1/tours", TourRouter);
-// app.use("/api/v1/users", userRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/auth", authRouter);
 
 // Error handling for unavailable routes that defined in above
 app.all("*", (req, res, next) => {
