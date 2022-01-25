@@ -1,5 +1,13 @@
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
+
+// Error Handling Events
+process.on("uncaughtException", (err) => {
+	console.log(err.name, err.message);
+	console.log(`UNHANDLED REJECTION! Shutting Down Server ...`);
+	process.exit(1);
+});
+
 const app = require("./app");
 const mongoose = require("mongoose");
 
@@ -24,6 +32,7 @@ const server = app.listen(PORT, () => {
 	console.log(`Server running on localhost:${PORT}`);
 });
 
+// Error Handling Events
 process.on("unhandledRejection", (err) => {
 	console.log(err.name, err.message);
 	console.log(`UNHANDLED REJECTION! Shutting Down Server ...`);
