@@ -14,7 +14,7 @@ const mongoose = require("mongoose");
 const DB = process.env.DATABASE_CLOUD_URI;
 
 mongoose
-	.connect(DB, {
+	.connect("mongodb://127.0.0.1/natours", {
 		useNewUrlParser: true,
 		useCreateIndex: true,
 		useFindAndModify: true,

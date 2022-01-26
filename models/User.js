@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		required: [true, "Please fill the password field"],
 		minlength: 8,
+		select: false,
 	},
 	passwordConfirmation: {
 		type: String,
@@ -45,5 +46,13 @@ UserSchema.pre("save", async function (next) {
 
 	next();
 });
+
+// Methods to compare the entered hashed password
+UserSchema.methods.comparePassword = async function (
+	enteredPassword,
+	password
+) {
+	return await bcryptjs.compare(enteredPassword, password);
+};
 
 module.exports = mongoose.model("User", UserSchema);
