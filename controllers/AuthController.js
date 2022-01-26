@@ -15,9 +15,13 @@ exports.signUp = HandleAsync(async (req, res, next) => {
 		email: req.body.email,
 		password: req.body.password,
 		passwordConfirmation: req.body.passwordConfirmation,
+		passwordChangedAt: req.body.passwordChangedAt,
 	});
 
-	const token = generateSignedToken(user._id);
+	// Generate Token
+	const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+		expiresIn: process.env.JWT_EXPIRES_IN,
+	});
 
 	res.status(201).json({
 		status: "Success",
@@ -42,7 +46,10 @@ exports.signIn = HandleAsync(async (req, res, next) => {
 		return next(new ErrorResponse("Invalid credentials email/password", 401));
 	}
 
-	const token = generateSignedToken(user._id);
+	// Generate Token
+	const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+		expiresIn: process.env.JWT_EXPIRES_IN,
+	});
 
 	res.status(200).json({
 		status: "Success",

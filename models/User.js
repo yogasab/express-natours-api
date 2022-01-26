@@ -33,6 +33,7 @@ const UserSchema = new mongoose.Schema({
 			message: "Your password confirmation is not match. Please check again",
 		},
 	},
+	passwordChangedAt: Date,
 });
 
 // Pre save middleware before save into User Model
@@ -53,6 +54,18 @@ UserSchema.methods.comparePassword = async function (
 	password
 ) {
 	return await bcryptjs.compare(enteredPassword, password);
+};
+
+// Method to compare the date if the password is changed
+UserSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
+	if (this.passwordChangedAt) {
+		const changedTimestamp = parseInt(
+			this.passwordChangedAt.getTime() / 1000,
+			10
+		);
+		return JWTTimeStamp < changedTimestamp; // 100 < 200
+	}
+	return false;
 };
 
 module.exports = mongoose.model("User", UserSchema);
