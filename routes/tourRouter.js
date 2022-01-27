@@ -11,6 +11,7 @@ const {
 	getMonthlyPlan,
 } = require("../controllers/TourController");
 const ProtectRoute = require("../middlewares/protectRoute");
+const RestrictTo = require("../middlewares/RestrictTo");
 const tourRouter = express.Router();
 
 // Middleware for checking route that requires an ID
@@ -19,7 +20,11 @@ tourRouter.param("id", checkID);
 tourRouter.route("/").get(ProtectRoute, getTours).post(createTours);
 tourRouter.route("/tour-stats").get(getTourStats);
 tourRouter.route("/top-5-cheap").get(aliasingQueryParams, getTours);
-tourRouter.route("/:id").get(getTour).patch(updateTour).delete(deleteTour);
+tourRouter
+	.route("/:id")
+	.get(getTour)
+	.patch(updateTour)
+	.delete(ProtectRoute, RestrictTo("admin", "lead-guide"), deleteTour);
 tourRouter.route("/monthly-plan/:year").get(getMonthlyPlan);
 
 module.exports = tourRouter;

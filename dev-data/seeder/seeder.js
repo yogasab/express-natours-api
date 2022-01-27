@@ -5,23 +5,19 @@ const Tour = require("../../models/Tour");
 
 dotenv.config({ path: "./config.env" });
 
-const DB = process.env.DATABASE_CLOUD_URI;
+const DB = "mongodb://127.0.0.1/natours";
 
 mongoose
-	.connect(
-		"mongodb+srv://yogasab:b0bmarl3y@cluster0.a8lwh.mongodb.net/natours?retryWrites=true&w=majority",
-		{
-			useNewUrlParser: true,
-			useCreateIndex: true,
-			useFindAndModify: true,
-			useUnifiedTopology: true,
-		}
-	)
-	.then((con) => {
-		console.log(`Database connected successfully at ${con.connection.host}`);
+	.connect(DB, {
+		useNewUrlParser: true,
+		useCreateIndex: true,
+		useFindAndModify: true,
+		useUnifiedTopology: true,
 	})
-	.catch((err) => {
-		console.log(err);
+	.then((con) => {
+		console.log(
+			`Database connected successfully at ${con.connection.host} on ${process.env.NODE_ENV}`
+		);
 	});
 
 const tours = JSON.parse(fs.readFileSync("../data/tours-simple.json"));
