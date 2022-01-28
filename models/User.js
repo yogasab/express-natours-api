@@ -56,6 +56,15 @@ UserSchema.pre("save", async function (next) {
 	next();
 });
 
+// Pre save middleware before save into User Model while update password functionality
+UserSchema.pre("save", function (next) {
+	// Only run this function if password was actually modified or newly created
+	if (!this.isModified("password") || this.isNew) return next();
+	// Set the passwordChangedAt
+	this.passwordChangedAt = Date.now() - 1000;
+	next();
+});
+
 // Methods to compare the entered hashed password
 UserSchema.methods.comparePassword = async function (
 	enteredPassword,

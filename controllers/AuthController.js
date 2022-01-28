@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const HandleAsync = require("../utils/HandleAsync");
@@ -107,4 +108,42 @@ exports.forgotPassword = HandleAsync(async (req, res, next) => {
 	}
 });
 
-exports.resetPassword = HandleAsync(async (req, res, next) => {});
+exports.resetPassword = HandleAsync(async (req, res, next) => {
+	const { token } = req.params;
+	// Encrypt the token to compare it
+	const encryptedToken = crypto
+		.createHash("sha256")
+		.update(token)
+		.digest("hex");
+
+	// Find the user by its reset token and reset password token
+	const user = await User.findOne({
+		resetPasswordToken: encryptedToken,
+		resetPasswordTokenExpired: { $gt: Date.now() },
+	});
+	// If the token is not expired and there is a user, set new password, resetPasswordToken resetPasswordTokenExpired, passwordConfirmation
+	if (!user) {
+		return next(
+			new ErrorResponse(
+				"User is not found or expired token. Please try again",
+				400
+			)
+		);
+	}
+	user.password = req.body.password;
+	user.passwordConfirmation = req.body.passwordConfirmation;
+	user.resetPasswordToken = null;
+	user.resetPasswordTokenExpired = null;
+	await user.save();
+	// Update the passwordChangedAt
+	// Login the user and send the token
+	const jwtToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+		expiresIn: process.env.JWT_EXPIRES_IN,
+	});
+
+	res.status(200).json({
+		status: "Success",
+		message: "Password updated successfully",
+		jwtToken,
+	});
+});
