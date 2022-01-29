@@ -20,6 +20,18 @@ const sendResponseToken = (res, user, statusCode, status, message) => {
 	});
 };
 
+const filterAllowedField = (body, ...allowedFields) => {
+	const filteredField = {};
+	Object.keys(body).forEach((field) => {
+		// if the req.body contains the name and email
+		if (allowedFields.includes(field)) {
+			// Set the key value pair
+			filteredField[field] = body[field];
+		}
+	});
+	return filteredField;
+};
+
 exports.signUp = HandleAsync(async (req, res, next) => {
 	const user = await User.create({
 		name: req.body.name,
@@ -154,4 +166,31 @@ exports.updatePassword = HandleAsync(async (req, res, next) => {
 	await user.save();
 	// Log the user in and generate token
 	sendResponseToken(res, user, 200, "Success", "Password updated successfully");
+});
+
+exports.updateMe = HandleAsync(async (req, res, next) => {
+	const { name, password, passwordConfirmation } = req.body;
+	const { body } = req;
+	const { id } = req.user;
+	// Check if there are password or passwordConfirmation field
+	if (password || passwordConfirmation) {
+		return next(new ErrorResponse("Cannot update password here", 400));
+	}
+
+	// Check only the allowedField to be able to update
+	const filteredFields = filterAllowedField(body, "name", "email");
+
+	// Find by id and update user
+	const user = await User.findByIdAndUpdate(id, filteredFields, {
+		new: true,
+		runValidators: true,
+	});
+
+	res.status(200).json({
+		status: "Success",
+		message: "User profile updated successfully",
+		data: {
+			user,
+		},
+	});
 });
