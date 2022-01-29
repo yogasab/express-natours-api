@@ -5,9 +5,18 @@ const HandleAsync = require("../utils/HandleAsync");
 const ErrorResponse = require("../utils/ErrorResponse");
 const sendEmail = require("../utils/sendEmail");
 
-const generateSignedToken = (id) => {
-	jwt.sign({ id }, process.env.JWT_SECRET, {
+const sendResponseToken = (res, user, statusCode, status, message) => {
+	const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRES_IN,
+	});
+
+	res.status(statusCode).json({
+		status,
+		message,
+		token,
+		data: {
+			user,
+		},
 	});
 };
 
@@ -21,18 +30,7 @@ exports.signUp = HandleAsync(async (req, res, next) => {
 	});
 
 	// Generate Token
-	const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-		expiresIn: process.env.JWT_EXPIRES_IN,
-	});
-
-	res.status(201).json({
-		status: "Success",
-		message: "User Sign Up successfully",
-		token,
-		data: {
-			user,
-		},
-	});
+	sendResponseToken(res, user, 201, "Success", "User sign up successfully");
 });
 
 exports.signIn = HandleAsync(async (req, res, next) => {
@@ -49,18 +47,7 @@ exports.signIn = HandleAsync(async (req, res, next) => {
 	}
 
 	// Generate Token
-	const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-		expiresIn: process.env.JWT_EXPIRES_IN,
-	});
-
-	res.status(200).json({
-		status: "Success",
-		message: "Login successful",
-		token,
-		data: {
-			user,
-		},
-	});
+	sendResponseToken(res, user, 200, "Success", "User signin successfully");
 });
 
 exports.forgotPassword = HandleAsync(async (req, res, next) => {
@@ -146,4 +133,25 @@ exports.resetPassword = HandleAsync(async (req, res, next) => {
 		message: "Password updated successfully",
 		jwtToken,
 	});
+});
+
+exports.updatePassword = HandleAsync(async (req, res, next) => {
+	const { id } = req.user;
+	const { currentPassword, password, passwordConfirmation } = req.body;
+	// Get the user from collection by its id
+	const user = await User.findById(id).select("+password");
+	// Check if the current password is correct by compare it
+	const isPasswordMatch = await user.comparePassword(
+		currentPassword,
+		user.password
+	);
+	if (!isPasswordMatch) {
+		return next(new ErrorResponse("Password doen't match", 401));
+	}
+	// If yes, update password
+	user.password = password;
+	user.passwordConfirmation = passwordConfirmation;
+	await user.save();
+	// Log the user in and generate token
+	sendResponseToken(res, user, 200, "Success", "Password updated successfully");
 });
