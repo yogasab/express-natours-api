@@ -9,6 +9,17 @@ const sendResponseToken = (res, user, statusCode, status, message) => {
 	const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRES_IN,
 	});
+	const tokenOptions = {
+		expires: new Date(
+			Date.now() * process.env.JWT_COOKIE_EXPIRES_IN * 24 * 3600 * 1000
+		),
+		httpOnly: true,
+	};
+	// Set to secure flag if it is in production
+	if (process.env.NODE_ENV === "production") tokenOptions.secure = true;
+	// Set JWT to Response Cookies for the safest way
+	res.cookie("jwt", token, tokenOptions);
+	user.password = undefined;
 
 	res.status(statusCode).json({
 		status,
