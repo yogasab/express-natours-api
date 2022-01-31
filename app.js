@@ -1,16 +1,25 @@
 const express = require("express");
 const morgan = require("morgan");
+const rateLimit = require("express-rate-limit");
 const userRouter = require("./routes/userRouter");
 const TourRouter = require("./routes/TourRouter");
 const ErrorResponse = require("./utils/ErrorResponse");
 const globalHandleError = require("./middlewares/globalHandleError");
 const authRouter = require("./routes/AuthRouter");
+
 const app = express();
+// To limit request
+const limiter = rateLimit({
+	windowMs: process.env.TIME_RATE_LIMIT * 60 * 1000, // 15 minutes,
+	max: 2,
+	message: `Too many request. Please try again in ${process.env.TIME_RATE_LIMIT} minutes`,
+});
 
 // Middleware
 if (process.env.NODE_ENV === "development") {
 	app.use(morgan("dev"));
 }
+app.use("/api", limiter);
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 // app.use((req, res, next) => {
