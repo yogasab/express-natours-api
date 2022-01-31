@@ -194,3 +194,11 @@ exports.updateMe = HandleAsync(async (req, res, next) => {
 		},
 	});
 });
+
+exports.deleteMe = HandleAsync(async (req, res, next) => {
+	const { id } = req.user;
+
+	const user = await User.findByIdAndUpdate(id, { active: false });
+
+	res.status(204).json();
+});
