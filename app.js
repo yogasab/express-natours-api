@@ -1,6 +1,10 @@
 const express = require("express");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
 const userRouter = require("./routes/userRouter");
 const TourRouter = require("./routes/TourRouter");
 const ErrorResponse = require("./utils/ErrorResponse");
@@ -8,19 +12,29 @@ const globalHandleError = require("./middlewares/globalHandleError");
 const authRouter = require("./routes/AuthRouter");
 
 const app = express();
-// To limit request
+app.use(helmet());
+// Limit Request
 const limiter = rateLimit({
 	windowMs: process.env.TIME_RATE_LIMIT * 60 * 1000, // 15 minutes,
-	max: 2,
+	max: 100,
 	message: `Too many request. Please try again in ${process.env.TIME_RATE_LIMIT} minutes`,
 });
 
-// Middleware
+// Logging up development
 if (process.env.NODE_ENV === "development") {
 	app.use(morgan("dev"));
 }
+// Limit Request
 app.use("/api", limiter);
-app.use(express.json());
+// Body parser reading data from body into req.body
+app.use(express.json({ limit: "10kb" }));
+// Data Sanitazation againg NOSQL Injection
+app.use(mongoSanitize());
+// Data Sanitization against XSS Attack
+app.use(xss());
+// To prevent parameter pollution
+app.use(hpp());
+// Serving static files
 app.use(express.static(`${__dirname}/public`));
 // app.use((req, res, next) => {
 // 	console.log("Testing middleware");

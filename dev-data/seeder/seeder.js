@@ -20,7 +20,7 @@ mongoose
 		);
 	});
 
-const tours = JSON.parse(fs.readFileSync("../data/tours-simple.json"));
+const tours = JSON.parse(fs.readFileSync("../data/tours.json"));
 
 // Seed data
 const importData = async () => {
