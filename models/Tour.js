@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
 const validator = require("validator");
+const User = require("./User");
 
 const TourSchema = new mongoose.Schema(
 	{
@@ -103,6 +104,7 @@ const TourSchema = new mongoose.Schema(
 			description: [String],
 			day: Number,
 		},
+		guides: Array,
 	},
 	{
 		toJSON: { virtuals: true },
@@ -122,6 +124,14 @@ TourSchema.pre("save", function (next) {
 	next();
 	// console.log("Running pre save middleware 1");
 });
+
+// Document Middleware: to embedding document or show to response with coressponding guide
+TourSchema.pre("save", async function (next) {
+	const guides = this.guides.map(async (id) => await User.findById(id));
+	this.guides = await Promise.all(guides);
+	next();
+});
+
 // TourSchema.pre("save", function (next) {
 // 	console.log("Running pre save middleware 2");
 // 	next();
