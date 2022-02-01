@@ -104,7 +104,15 @@ const TourSchema = new mongoose.Schema(
 			description: [String],
 			day: Number,
 		},
-		guides: Array,
+		// Embedding Document
+		// guides: Array,
+		guides: [
+			{
+				// Child Referencing
+				type: mongoose.Schema.ObjectId,
+				ref: "User",
+			},
+		],
 	},
 	{
 		toJSON: { virtuals: true },
@@ -126,11 +134,11 @@ TourSchema.pre("save", function (next) {
 });
 
 // Document Middleware: to embedding document or show to response with coressponding guide
-TourSchema.pre("save", async function (next) {
-	const guides = this.guides.map(async (id) => await User.findById(id));
-	this.guides = await Promise.all(guides);
-	next();
-});
+// TourSchema.pre("save", async function (next) {
+// 	const guides = this.guides.map(async (id) => await User.findById(id));
+// 	this.guides = await Promise.all(guides);
+// 	next();
+// });
 
 // TourSchema.pre("save", function (next) {
 // 	console.log("Running pre save middleware 2");
@@ -148,6 +156,12 @@ TourSchema.pre(/^find/, function (next) {
 	this.find({ secretTour: { $ne: true } });
 	// Define an arbitary object
 	this.duration = Date.now();
+	next();
+});
+// Query Middleware to populate relation in Tour
+TourSchema.pre(/^find/, function (next) {
+	// have access to query
+	this.populate({ path: "guides", select: "-__v" });
 	next();
 });
 // Query Middleware: runs before all the methods that starts with .find()
