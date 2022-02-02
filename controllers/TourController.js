@@ -142,7 +142,7 @@ exports.getTours = HandleAsync(async (req, res) => {
 });
 
 exports.getTour = HandleAsync(async (req, res) => {
-	const tour = await Tour.findById(req.id);
+	const tour = await Tour.findById(req.id).populate("reviews");
 	res.status(200).json({
 		status: "Success",
 		data: {

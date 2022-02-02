@@ -31,7 +31,12 @@ const ReviewSchema = new mongoose.Schema({
 
 // Query Middleware to populate reviews relationship
 ReviewSchema.pre(/^find/, function (next) {
-	this.populate({ path: "tour", select: "name" }).populate({
+	// One to Many relationship looklike
+	// this.populate({ path: "tour", select: "name" }).populate({
+	// 	path: "user",
+	// 	select: "name photo",
+	// });
+	this.populate({
 		path: "user",
 		select: "name photo",
 	});

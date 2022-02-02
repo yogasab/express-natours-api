@@ -113,6 +113,12 @@ const TourSchema = new mongoose.Schema(
 				ref: "User",
 			},
 		],
+		// reviews: [
+		// 	{
+		// 		type: mongoose.Schema.ObjectId,
+		// 		ref: "Review",
+		// 	},
+		// ],
 	},
 	// Virtual Propperty
 	{
@@ -121,9 +127,15 @@ const TourSchema = new mongoose.Schema(
 	}
 );
 
-// Virtuals
+// Virtuals Property
 TourSchema.virtual("durationWeeks").get(function () {
 	return Math.ceil(this.duration / 7);
+});
+// Virtual Populate | Many to One looklike
+TourSchema.virtual("reviews", {
+	ref: "Review",
+	foreignField: "tour",
+	localField: "_id",
 });
 
 // Document Middleware: runs before .save() or .create() not .saveMany()
