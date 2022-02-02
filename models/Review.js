@@ -29,4 +29,13 @@ const ReviewSchema = new mongoose.Schema({
 	},
 });
 
+// Query Middleware to populate reviews relationship
+ReviewSchema.pre(/^find/, function (next) {
+	this.populate({ path: "tour", select: "name" }).populate({
+		path: "user",
+		select: "name photo",
+	});
+	next();
+});
+
 module.exports = new mongoose.model("Review", ReviewSchema);

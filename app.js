@@ -10,6 +10,7 @@ const TourRouter = require("./routes/TourRouter");
 const ErrorResponse = require("./utils/ErrorResponse");
 const globalHandleError = require("./middlewares/globalHandleError");
 const authRouter = require("./routes/AuthRouter");
+const reviewRouter = require("./routes/ReviewRouter");
 
 const app = express();
 app.use(helmet());
@@ -50,6 +51,7 @@ app.use((req, res, next) => {
 app.use("/api/v1/tours", TourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/reviews", reviewRouter);
 
 // Error handling for unavailable routes that defined in above
 app.all("*", (req, res, next) => {
