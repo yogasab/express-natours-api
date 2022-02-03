@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const HandleAsync = require("../utils/HandleAsync");
+const handleAsync = require("../utils/HandleAsync");
 const ErrorResponse = require("../utils/ErrorResponse");
 const sendEmail = require("../utils/sendEmail");
 
@@ -43,7 +43,7 @@ const filterAllowedField = (body, ...allowedFields) => {
 	return filteredField;
 };
 
-exports.signUp = HandleAsync(async (req, res, next) => {
+exports.signUp = handleAsync(async (req, res, next) => {
 	const user = await User.create({
 		name: req.body.name,
 		email: req.body.email,
@@ -56,7 +56,7 @@ exports.signUp = HandleAsync(async (req, res, next) => {
 	sendResponseToken(res, user, 201, "Success", "User sign up successfully");
 });
 
-exports.signIn = HandleAsync(async (req, res, next) => {
+exports.signIn = handleAsync(async (req, res, next) => {
 	const { email, password } = req.body;
 	// Check if the email and password field is not empty
 	if (!email || !password) {
@@ -73,7 +73,7 @@ exports.signIn = HandleAsync(async (req, res, next) => {
 	sendResponseToken(res, user, 200, "Success", "User signin successfully");
 });
 
-exports.forgotPassword = HandleAsync(async (req, res, next) => {
+exports.forgotPassword = handleAsync(async (req, res, next) => {
 	const { email } = req.body;
 	if (!email) {
 		return next(new ErrorResponse("Please enter your email address", 400));
@@ -118,7 +118,7 @@ exports.forgotPassword = HandleAsync(async (req, res, next) => {
 	}
 });
 
-exports.resetPassword = HandleAsync(async (req, res, next) => {
+exports.resetPassword = handleAsync(async (req, res, next) => {
 	const { token } = req.params;
 	// Encrypt the token to compare it
 	const encryptedToken = crypto
@@ -158,7 +158,7 @@ exports.resetPassword = HandleAsync(async (req, res, next) => {
 	});
 });
 
-exports.updatePassword = HandleAsync(async (req, res, next) => {
+exports.updatePassword = handleAsync(async (req, res, next) => {
 	const { id } = req.user;
 	const { currentPassword, password, passwordConfirmation } = req.body;
 	// Get the user from collection by its id
@@ -179,7 +179,7 @@ exports.updatePassword = HandleAsync(async (req, res, next) => {
 	sendResponseToken(res, user, 200, "Success", "Password updated successfully");
 });
 
-exports.updateMe = HandleAsync(async (req, res, next) => {
+exports.updateMe = handleAsync(async (req, res, next) => {
 	const { name, password, passwordConfirmation } = req.body;
 	const { body } = req;
 	const { id } = req.user;
@@ -206,10 +206,19 @@ exports.updateMe = HandleAsync(async (req, res, next) => {
 	});
 });
 
-exports.deleteMe = HandleAsync(async (req, res, next) => {
+exports.deleteMe = handleAsync(async (req, res, next) => {
 	const { id } = req.user;
 
 	const user = await User.findByIdAndUpdate(id, { active: false });
 
 	res.status(204).json();
+});
+
+exports.getMe = handleAsync(async (req, res, next) => {
+	const { user } = req;
+	res.status(200).json({
+		status: "Success",
+		message: "User fetched successfully",
+		data: { user },
+	});
 });

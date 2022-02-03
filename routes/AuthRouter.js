@@ -7,6 +7,7 @@ const {
 	updatePassword,
 	updateMe,
 	deleteMe,
+	getMe,
 } = require("../controllers/AuthController");
 const ProtectRoute = require("../middlewares/ProtectRoute");
 const authRouter = express.Router();
@@ -18,6 +19,7 @@ authRouter.post("/forgot-password", forgotPassword);
 authRouter.patch("/update-password", ProtectRoute, updatePassword);
 authRouter.patch("/update-me", ProtectRoute, updateMe);
 authRouter.delete("/delete-me", ProtectRoute, deleteMe);
+authRouter.get("/get-me", ProtectRoute, getMe);
 authRouter.patch("/reset-password/:token", resetPassword);
 
 module.exports = authRouter;

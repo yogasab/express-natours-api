@@ -4,6 +4,7 @@ const {
 	getReviews,
 	deleteReview,
 	updateReview,
+	getReview,
 } = require("../controllers/ReviewController");
 const protectRoute = require("../middlewares/protectRoute");
 const restrictTo = require("../middlewares/RestrictTo");
@@ -21,6 +22,7 @@ reviewRouter
 
 reviewRouter
 	.route("/:id")
+	.get(protectRoute, getReview)
 	.delete(protectRoute, deleteReview)
 	.patch(protectRoute, updateReview);
 

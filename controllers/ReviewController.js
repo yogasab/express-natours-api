@@ -2,7 +2,6 @@ const Review = require("../models/Review");
 const handleAsync = require("../utils/HandleAsync");
 
 exports.createReview = handleAsync(async (req, res, next) => {
-
 	const review = await Review.create(req.body);
 
 	res.status(201).json({
@@ -26,6 +25,20 @@ exports.getReviews = handleAsync(async (req, res, next) => {
 		message: "Review fetched successfully",
 		data: {
 			reviews,
+		},
+	});
+});
+
+exports.getReview = handleAsync(async (req, res, next) => {
+	const { id } = req.params;
+
+	const review = await Review.findById(id);
+
+	res.status(200).json({
+		status: "Success",
+		message: "Review fetched successfully",
+		data: {
+			review,
 		},
 	});
 });
