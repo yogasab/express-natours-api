@@ -1,5 +1,4 @@
 const express = require("express");
-const { createReview } = require("../controllers/ReviewController");
 const {
 	checkID,
 	getTours,
@@ -13,10 +12,16 @@ const {
 } = require("../controllers/TourController");
 const ProtectRoute = require("../middlewares/protectRoute");
 const RestrictTo = require("../middlewares/RestrictTo");
+const reviewRouter = require("./ReviewRouter");
 const tourRouter = express.Router();
 
 // Middleware for checking route that requires an ID
 tourRouter.param("id", checkID);
+
+// Tour Reviews use reviewRouter as middleware
+// POST /tours/:tourId/reviews
+// GET /tours/:tourId/reviews
+tourRouter.use("/:tourId/reviews", reviewRouter);
 
 tourRouter.route("/").get(ProtectRoute, getTours).post(createTours);
 tourRouter.route("/tour-stats").get(getTourStats);
@@ -27,12 +32,5 @@ tourRouter
 	.patch(updateTour)
 	.delete(ProtectRoute, RestrictTo("admin", "lead-guide"), deleteTour);
 tourRouter.route("/monthly-plan/:year").get(getMonthlyPlan);
-
-// Tour Reviews
-// POST /tours/:tourId/reviews
-// GET /tours/:tourId/reviews
-tourRouter
-	.route("/:tourId/reviews")
-	.post(ProtectRoute, RestrictTo("user"), createReview);
 
 module.exports = tourRouter;

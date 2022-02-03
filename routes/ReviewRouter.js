@@ -3,7 +3,7 @@ const { createReview, getReviews } = require("../controllers/ReviewController");
 const protectRoute = require("../middlewares/protectRoute");
 const restrictTo = require("../middlewares/RestrictTo");
 
-const reviewRouter = express.Router();
+const reviewRouter = express.Router({ mergeParams: true });
 
 // reviewRouter
 // 	.route("/")
