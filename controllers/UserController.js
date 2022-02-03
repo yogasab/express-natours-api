@@ -31,6 +31,20 @@ exports.getUsers = async (req, res) => {
 	});
 };
 
+exports.getUser = handleAsync(async (req, res, next) => {
+	const { id } = req.params;
+
+	const user = await User.findById(id);
+
+	res.status(200).json({
+		status: "Success",
+		message: "User fetched successfully",
+		data: {
+			user,
+		},
+	});
+});
+
 exports.deleteUser = handleAsync(async (req, res, next) => {
 	const { id } = req.params;
 

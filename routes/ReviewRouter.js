@@ -15,15 +15,17 @@ const setUserAndTourID = require("../middlewares/setUserAndTourID");
 // GET /tours/:tourId/reviews
 const reviewRouter = express.Router({ mergeParams: true });
 
+app.use(protectRoute);
+
 reviewRouter
 	.route("/")
-	.post(protectRoute, restrictTo("user"), setUserAndTourID, createReview)
-	.get(protectRoute, getReviews);
+	.post(restrictTo("user"), setUserAndTourID, createReview)
+	.get(getReviews);
 
 reviewRouter
 	.route("/:id")
-	.get(protectRoute, getReview)
-	.delete(protectRoute, deleteReview)
-	.patch(protectRoute, updateReview);
+	.get(getReview)
+	.delete(restrictTo("user", "admin"), deleteReview)
+	.patch(restrictTo("user", "admin"), updateReview);
 
 module.exports = reviewRouter;

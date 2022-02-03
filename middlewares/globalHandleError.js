@@ -1,7 +1,7 @@
 const ErrorResponse = require("../utils/ErrorResponse");
 
 const sendErrorDev = (res, err) => {
-	res.status(err.statusCode).json({
+	res.status(500).json({
 		status: err.status,
 		message: err.message,
 		error: err,
