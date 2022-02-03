@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const ErrorResponse = require("../utils/ErrorResponse");
 const handleAsync = require("../utils/HandleAsync");
 
 // Create user only for admin
@@ -38,4 +39,26 @@ exports.deleteUser = handleAsync(async (req, res, next) => {
 	res
 		.status(204)
 		.json({ status: "Success", message: "User deleted successfully" });
+});
+
+exports.updateUser = handleAsync(async (req, res, next) => {
+	const { id } = req.params;
+	if (req.body.password || req.body.passwordConfirmation) {
+		return next(
+			new ErrorResponse("This routes doesn't support updating password")
+		);
+	}
+
+	const user = await User.findByIdAndUpdate(id, req.body, {
+		new: true,
+		runValidators: true,
+	});
+
+	res.status(200).json({
+		status: "Success",
+		message: "User data updated successfully",
+		data: {
+			user,
+		},
+	});
 });

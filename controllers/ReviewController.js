@@ -2,9 +2,7 @@ const Review = require("../models/Review");
 const handleAsync = require("../utils/HandleAsync");
 
 exports.createReview = handleAsync(async (req, res, next) => {
-	// Nested Routes
-	if (!req.body.tour) req.body.tour = req.params.tourId;
-	if (!req.body.user) req.body.user = req.user.id;
+
 	const review = await Review.create(req.body);
 
 	res.status(201).json({
@@ -40,5 +38,22 @@ exports.deleteReview = handleAsync(async (req, res, next) => {
 		status: "Success",
 		message: "Review deleted successfully",
 		data: null,
+	});
+});
+
+exports.updateReview = handleAsync(async (req, res, next) => {
+	const { id } = req.params;
+
+	const review = await Review.findByIdAndUpdate(id, req.body, {
+		new: true,
+		runValidators: true,
+	});
+
+	res.status(200).json({
+		status: "Success",
+		message: "Review updated successfully",
+		data: {
+			review,
+		},
 	});
 });
