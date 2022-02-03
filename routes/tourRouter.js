@@ -33,4 +33,5 @@ tourRouter
 	.delete(ProtectRoute, RestrictTo("admin", "lead-guide"), deleteTour);
 tourRouter.route("/monthly-plan/:year").get(getMonthlyPlan);
 
+
 module.exports = tourRouter;
