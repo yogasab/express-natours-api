@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const handleAsync = require("../utils/HandleAsync");
 
 // Create user only for admin
 exports.createUser = async (req, res) => {
@@ -28,3 +29,13 @@ exports.getUsers = async (req, res) => {
 		},
 	});
 };
+
+exports.deleteUser = handleAsync(async (req, res, next) => {
+	const { id } = req.params;
+
+	const user = await User.findByIdAndDelete(id);
+
+	res
+		.status(204)
+		.json({ status: "Success", message: "User deleted successfully" });
+});

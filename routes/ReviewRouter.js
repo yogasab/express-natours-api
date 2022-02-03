@@ -1,5 +1,5 @@
 const express = require("express");
-const { createReview, getReviews } = require("../controllers/ReviewController");
+const { createReview, getReviews, deleteReview } = require("../controllers/ReviewController");
 const protectRoute = require("../middlewares/protectRoute");
 const restrictTo = require("../middlewares/RestrictTo");
 
@@ -12,5 +12,7 @@ reviewRouter
 	.route("/")
 	.post(protectRoute, restrictTo("user"), createReview)
 	.get(protectRoute, getReviews);
+
+reviewRouter.route("/:id").delete(protectRoute, deleteReview);
 
 module.exports = reviewRouter;

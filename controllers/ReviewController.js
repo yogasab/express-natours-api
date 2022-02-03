@@ -31,3 +31,14 @@ exports.getReviews = handleAsync(async (req, res, next) => {
 		},
 	});
 });
+
+exports.deleteReview = handleAsync(async (req, res, next) => {
+	const { id } = req.params;
+	await Review.findByIdAndDelete(id);
+
+	res.status(204).json({
+		status: "Success",
+		message: "Review deleted successfully",
+		data: null,
+	});
+});
