@@ -15,7 +15,7 @@ const setUserAndTourID = require("../middlewares/setUserAndTourID");
 // GET /tours/:tourId/reviews
 const reviewRouter = express.Router({ mergeParams: true });
 
-app.use(protectRoute);
+reviewRouter.use(protectRoute);
 
 reviewRouter
 	.route("/")
