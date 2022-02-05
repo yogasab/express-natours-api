@@ -30,6 +30,9 @@ const ReviewSchema = new mongoose.Schema({
 	},
 });
 
+// Set user and tour index to 1 so user only be able to create only on review
+ReviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 // Query Middleware to populate reviews relationship
 ReviewSchema.pre(/^find/, function (next) {
 	// One to Many relationship looklike
