@@ -131,6 +131,7 @@ const TourSchema = new mongoose.Schema(
 // Indexing all the often queried fields to improve performance
 TourSchema.index({ price: 1, ratingsAverage: -1 });
 TourSchema.index({ slug: 1 });
+TourSchema.index({ startLocation: "2dsphere" });
 
 // Virtuals Property
 TourSchema.virtual("durationWeeks").get(function () {

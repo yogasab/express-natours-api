@@ -395,3 +395,32 @@ exports.getMonthlyPlan = HandleAsync(async (req, res) => {
 	// 	res.status(400).json({ status: "Failed", message: error.message });
 	// }
 });
+
+// tour-within/233/center/-6.2884439,106.8663284/unit/mil
+// tour-within/:distance/center/:latlng/unit/:unit
+exports.getToursWithinRadius = HandleAsync(async (req, res, next) => {
+	const { distance, latlng, unit } = req.params;
+	const [lat, lng] = latlng.split(",");
+	const radius = unit === "mil" ? distance / 3963.2 : distance / 6378.1;
+
+	if (!lat || !lng) {
+		return next(
+			new ErrorResponse(
+				"Please specify the lattitude and longitude in order to find tours",
+				400
+			)
+		);
+	}
+
+	const tours = await Tour.find({
+		startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+	});
+
+	res.status(200).json({
+		status: "Success",
+		results: tours.length,
+		data: {
+			data: tours,
+		},
+	});
+});
