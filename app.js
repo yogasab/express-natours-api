@@ -5,6 +5,8 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
+const pug = require("pug");
+const path = require("path");
 const userRouter = require("./routes/userRouter");
 const TourRouter = require("./routes/TourRouter");
 const ErrorResponse = require("./utils/ErrorResponse");
@@ -13,6 +15,11 @@ const authRouter = require("./routes/AuthRouter");
 const reviewRouter = require("./routes/ReviewRouter");
 
 const app = express();
+
+// Views Template
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
+
 app.use(helmet());
 // Limit Request
 const limiter = rateLimit({
@@ -48,6 +55,9 @@ app.use((req, res, next) => {
 });
 
 // Mounting Router
+app.get("/", (req, res) => {
+	res.status(200).render("base");
+});
 app.use("/api/v1/tours", TourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
