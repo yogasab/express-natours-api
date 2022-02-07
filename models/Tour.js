@@ -190,11 +190,12 @@ TourSchema.post(/^find/, function (docs, next) {
 });
 
 // Aggregation Midleware: runs before .aggregate()
-TourSchema.pre("aggregate", function (next) {
-	// We have access to aggregation to run this match before aggregation in controller
-	this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-	next();
-});
+// TourSchema.pre("aggregate", function (next) {
+// 	// We have access to aggregation to run this match before aggregation in controller
+// 	this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+// 	console.log(this.pipeline());
+// 	next();
+// });
 
 const Tour = mongoose.model("Tour", TourSchema);
 

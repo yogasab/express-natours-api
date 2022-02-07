@@ -424,3 +424,42 @@ exports.getToursWithinRadius = HandleAsync(async (req, res, next) => {
 		},
 	});
 });
+
+// /api/v1/tours/distance/34.11745,-118.113491/unit/:unit
+exports.getDistanceToTours = HandleAsync(async (req, res, next) => {
+	const { latlng, unit } = req.params;
+	const [lat, lng] = latlng.split(",");
+	const multiplier = unit === "mil" ? 0.000621371 : 0.001;
+
+	if (!lat || !lng) {
+		return next(
+			new ErrorResponse(
+				"Please specify the lattitude and longitude in order to find tours",
+				400
+			)
+		);
+	}
+
+	const distance = await Tour.aggregate([
+		{
+			$geoNear: {
+				near: { type: "Point", coordinates: [lng * 1, lat * 1] },
+				distanceField: "distance",
+				distanceMultiplier: multiplier,
+			},
+		},
+		{
+			$project: {
+				name: 1,
+				distance: 1,
+			},
+		},
+	]);
+
+	res.status(200).json({
+		status: "Success",
+		data: {
+			data: distance,
+		},
+	});
+});

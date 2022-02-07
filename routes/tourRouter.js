@@ -10,6 +10,7 @@ const {
 	getTourStats,
 	getMonthlyPlan,
 	getToursWithinRadius,
+	getDistanceToTours,
 } = require("../controllers/TourController");
 const ProtectRoute = require("../middlewares/protectRoute");
 const RestrictTo = require("../middlewares/RestrictTo");
@@ -29,6 +30,9 @@ tourRouter.route("/").get(ProtectRoute, getTours).post(createTours);
 tourRouter.route("/tour-stats").get(getTourStats);
 
 tourRouter.route("/top-5-cheap").get(aliasingQueryParams, getTours);
+
+// /api/v1/tours/distance/34.11745,-118.113491/unit/:unit
+tourRouter.route("/distance/:latlng/unit/:unit").get(getDistanceToTours);
 
 // tour-within/233/center/-6.2884439,106.8663284/unit/:mil
 tourRouter
