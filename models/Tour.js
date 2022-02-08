@@ -93,18 +93,20 @@ const TourSchema = new mongoose.Schema(
 			address: [String],
 			description: [String],
 		},
-		location: {
-			type: {
-				type: String,
-				default: "Point",
-				enum: ["Point"],
+		locations: [
+			{
+				type: {
+					type: String,
+					default: "Point",
+					enum: ["Point"],
+				},
+				// Defining Embedded Documents
+				coordinates: [Number],
+				address: [String],
+				description: [String],
+				day: Number,
 			},
-			// Defining Embedded Documents
-			coordinates: [Number],
-			address: [String],
-			description: [String],
-			day: Number,
-		},
+		],
 		// Embedding Document
 		// guides: Array,
 		guides: [
