@@ -4,6 +4,6 @@ const { getTour } = require("../../controllers/web/TourController");
 const viewRouter = express.Router();
 
 viewRouter.get("/", getOverview);
-viewRouter.get("/tour", getTour);
+viewRouter.get("/tours/:slug", getTour);
 
 module.exports = viewRouter;

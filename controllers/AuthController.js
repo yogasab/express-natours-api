@@ -64,8 +64,8 @@ exports.signIn = handleAsync(async (req, res, next) => {
 	}
 	// Find user by email
 	const user = await User.findOne({ email }).select("+password");
-	// Check if hashed password is match
-	if (!user || !(await user.comparePassword(password, user.password))) {
+	// // Check if hashed password is match
+	if (!user || (await user.comparePassword(password, user.password))) {
 		return next(new ErrorResponse("Invalid credentials email/password", 401));
 	}
 

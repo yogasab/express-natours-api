@@ -139,6 +139,7 @@ TourSchema.index({ startLocation: "2dsphere" });
 TourSchema.virtual("durationWeeks").get(function () {
 	return Math.ceil(this.duration / 7);
 });
+
 // Virtual Populate | Many to One looklike
 TourSchema.virtual("reviews", {
 	ref: "Review",
