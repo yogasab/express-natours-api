@@ -10,7 +10,7 @@ exports.getTour = HandleAsync(async (req, res) => {
 	});
 
 	res.status(200).render("tour", {
-		title: "The Forest Hiker Tour Detail",
+		title: `${tour.name}`,
 		tour,
 	});
 });
