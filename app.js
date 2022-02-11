@@ -7,6 +7,7 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 const pug = require("pug");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 const userRouter = require("./routes/userRouter");
 const TourRouter = require("./routes/TourRouter");
 const ErrorResponse = require("./utils/ErrorResponse");
@@ -21,7 +22,12 @@ const app = express();
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
-app.use(helmet());
+app.use(cookieParser());
+app.use(
+	helmet({
+		contentSecurityPolicy: false,
+	})
+);
 // Limit Request
 const limiter = rateLimit({
 	windowMs: process.env.TIME_RATE_LIMIT * 60 * 1000, // 15 minutes,
@@ -52,6 +58,7 @@ app.use(express.static(`${__dirname}/public`));
 app.use((req, res, next) => {
 	// Set request time to header
 	req.requestTime = new Date().toISOString();
+	console.log("Cookies: ", req.cookies);
 	next();
 });
 
